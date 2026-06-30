@@ -1,0 +1,87 @@
+services:
+
+  postgres:
+    image: postgres:17
+
+    container_name: postgres-db
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    ports:
+      - "${DB_PORT}:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+
+    networks:
+      - convocatoria-network
+
+  backend:
+
+    build:
+      context: ./backend
+
+    container_name: backend-api
+
+    depends_on:
+      - postgres
+
+    ports:
+      - "${BACKEND_PORT}:8080"
+
+    env_file:
+      - .env
+
+    environment:
+      DB_HOST: postgres
+
+    networks:
+      - convocatoria-network
+
+    volumes:
+      - ./backend:/app
+      - ~/.m2:/root/.m2
+
+  frontend:
+
+    build:
+      context: ./frontend
+
+    container_name: frontend-web
+    
+    restart: always
+
+    depends_on:
+      - backend
+
+    ports:
+      - "${FRONTEND_PORT}:4200"
+
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  adminer:
+    image: adminer
+    container_name: backend-dev-adminer
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+    networks:
+      - convocatoria-network
+
+volumes:
+
+  postgres_data:
+
+networks:
+
+  convocatoria-network:

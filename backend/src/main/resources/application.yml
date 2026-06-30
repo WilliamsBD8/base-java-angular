@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: convocatoria
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION:86400000}
