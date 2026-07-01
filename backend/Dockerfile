@@ -7,9 +7,10 @@ COPY mvnw .
 COPY pom.xml .
 
 RUN chmod +x mvnw
-RUN ./mvnw dependency:go-offline
+RUN for i in 1 2 3; do ./mvnw -B dependency:resolve dependency:resolve-plugins && break || sleep 10; done
 
 COPY src src
+RUN for i in 1 2 3; do ./mvnw -B compile -DskipTests && break || sleep 10; done
 
 EXPOSE 8080
 
