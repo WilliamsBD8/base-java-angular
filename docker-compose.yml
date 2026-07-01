@@ -26,6 +26,7 @@ services:
 
     build:
       context: ./backend
+      dockerfile: Dockerfile.dev
 
     container_name: backend-api
 
@@ -52,6 +53,7 @@ services:
 
     build:
       context: ./frontend
+      dockerfile: Dockerfile.dev
 
     container_name: frontend-web
     
