@@ -36,7 +36,7 @@ public class UserService {
                 .fullName(user.getFullName())
                 .email(user.getEmail())
                 .roles(user.getRoles().stream().map(RolesEntity::getName).collect(Collectors.toList()))
-                .status(user.getStatus())
+                .state(user.getState())
                 .build();
     }
 

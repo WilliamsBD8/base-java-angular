@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.usco.convocatoria.app.categories.application.response.CategoryResponse;
 import com.usco.convocatoria.app.convocations.domain.model.enums.ConvocationsStates;
+import com.usco.convocatoria.app.petitions.application.response.PetitionResponse;
 import com.usco.convocatoria.app.user.application.response.UserResponseApp;
 
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ public class ConvocationResponse {
     private Integer quota;
     private ConvocationsStates state;
     private List<CategoryResponse> categories;
+    private List<PetitionResponse> petitions;
     private UserResponseApp createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

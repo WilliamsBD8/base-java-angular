@@ -22,7 +22,7 @@ public class UserResponse {
     private String name;
     private String email;
     private List<String> roles;
-    private StateUser status;
+    private StateUser state;
 
     public static UserResponse from(UserPrincipal user) {
         return UserResponse.builder()
@@ -30,7 +30,7 @@ public class UserResponse {
                 .name(user.getName())
                 .email(user.getEmail())
                 .roles(user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
-                .status(user.getStatus())
+                .state(user.getState())
                 .build();
     }
 }

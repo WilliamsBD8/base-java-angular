@@ -20,5 +20,5 @@ public class UserResponseApp {
     private String fullName;
     private String email;
     private List<String> roles;
-    private StateUser status;
+    private StateUser state;
 }

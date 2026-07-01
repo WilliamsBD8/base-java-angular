@@ -27,7 +27,7 @@ public class UserPrincipal implements UserDetails {
     private String email;
     private String password;
     private String role;
-    private StateUser status;
+    private StateUser state;
     private Collection<? extends GrantedAuthority> authorities;
 
     @Override
@@ -53,7 +53,7 @@ public class UserPrincipal implements UserDetails {
             .email(user.getEmail())
             .password(user.getPassword())
             .role(user.getRoles().stream().map(RolesEntity::getName).collect(Collectors.joining(", ")))
-            .status(user.getStatus())
+            .state(user.getState())
             .authorities(
                 user.getRoles()
                     .stream()
@@ -70,7 +70,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return status == StateUser.ACTIVE;
+        return state.equals(StateUser.ACTIVE);
     }
 
     @Override

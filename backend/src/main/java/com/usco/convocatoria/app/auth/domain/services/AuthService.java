@@ -17,6 +17,7 @@ import com.usco.convocatoria.app.auth.application.responses.LoginResponse;
 import com.usco.convocatoria.app.auth.application.responses.UserResponse;
 import com.usco.convocatoria.app.user.domain.model.RolesEntity;
 import com.usco.convocatoria.app.user.domain.model.UserEntity;
+import com.usco.convocatoria.app.user.domain.model.enums.StateUser;
 import com.usco.convocatoria.app.user.domain.repository.RoleRepository;
 import com.usco.convocatoria.app.user.domain.repository.UserRepository;
 import com.usco.convocatoria.exception.BusinessException;
@@ -55,7 +56,7 @@ public class AuthService {
         RolesEntity role = roleRepository.findByName(request.getRole())
                 .orElseThrow(() -> new BusinessException(
                         HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Rol " + request.getRole() + " no configurado",
+                        "Rol " + request.getRole() + " no esta configurado",
                         null
                 ));
 
@@ -63,6 +64,7 @@ public class AuthService {
         user.setFullName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setState(StateUser.ACTIVE);
         user.setRoles(Set.of(role));
 
         UserEntity savedUser = userRepository.save(user);

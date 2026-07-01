@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.usco.convocatoria.app.categories.application.response.CategoryResponse;
 import com.usco.convocatoria.app.categories.domain.model.CategoriesEntity;
 import com.usco.convocatoria.app.categories.domain.repository.CategoryRepository;
 import com.usco.convocatoria.app.convocations.application.request.ConvocationCreate;
@@ -22,10 +21,10 @@ import com.usco.convocatoria.app.convocations.application.response.ConvocationRe
 import com.usco.convocatoria.app.convocations.domain.model.ConvocationsEntity;
 import com.usco.convocatoria.app.convocations.domain.model.enums.ConvocationsStates;
 import com.usco.convocatoria.app.convocations.domain.repository.ConvocationRepository;
-import com.usco.convocatoria.app.user.application.response.UserResponseApp;
-import com.usco.convocatoria.app.user.domain.model.RolesEntity;
-import com.usco.convocatoria.app.user.domain.model.UserEntity;
+import com.usco.convocatoria.app.petitions.application.response.PetitionResponse;
+import com.usco.convocatoria.app.petitions.domain.repository.PetitionRepository;
 import com.usco.convocatoria.app.user.domain.service.UserService;
+import com.usco.convocatoria.common.mapper.ResponseMapper;
 import com.usco.convocatoria.common.response.ApiPage;
 import com.usco.convocatoria.exception.BusinessException;
 
@@ -38,7 +37,9 @@ public class ConvocationService {
 
     private final CategoryRepository categoryRepository;
     private final ConvocationRepository convocationRepository;
+    private final PetitionRepository petitionRepository;
     private final UserService userService;
+    private final ResponseMapper responseMapper;
 
     public ConvocationsEntity createConvocation(ConvocationCreate request) {
         ConvocationsEntity convocation = new ConvocationsEntity();
@@ -132,45 +133,22 @@ public class ConvocationService {
 
     @Transactional(readOnly = true)
     public ConvocationResponse fromEntity(ConvocationsEntity entity) {
-        return ConvocationResponse.builder()
-                .id(entity.getId())
-                .name(entity.getName())
-                .description(entity.getDescription())
-                .initialDate(entity.getInitialDate())
-                .finalDate(entity.getFinalDate())
-                .quota(entity.getQuota())
-                .state(entity.getState())
-                .categories(entity.getCategories().stream().map(this::toCategoryResponse).toList())
-                .createdBy(toUserResponse(entity.getCreatedBy()))
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
-                .build();
+        List<PetitionResponse> petitions = petitionRepository.findByConvocation_Id(entity.getId())
+                .stream()
+                .map(responseMapper::toPetitionSummary)
+                .toList();
+
+        return responseMapper.toConvocationResponse(entity, petitions);
     }
 
     private java.util.Set<CategoriesEntity> resolveCategories(Collection<Long> categoryIds) {
         return categoryIds.stream()
                 .map(id -> categoryRepository.findById(id)
-                        .orElseThrow(() -> new BusinessException(HttpStatus.NOT_FOUND, "Categoría no encontrada", List.of(Map.of("categoryId", "Una de las categorías no existe")))))
+                        .orElseThrow(() -> new BusinessException(
+                                HttpStatus.NOT_FOUND,
+                                "Categoría no encontrada",
+                                List.of(Map.of("categoryId", "Una de las categorías no existe"))
+                        )))
                 .collect(Collectors.toSet());
-    }
-
-    private CategoryResponse toCategoryResponse(CategoriesEntity category) {
-        return CategoryResponse.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .description(category.getDescription())
-                .createdAt(category.getCreatedAt())
-                .updatedAt(category.getUpdatedAt())
-                .build();
-    }
-
-    private UserResponseApp toUserResponse(UserEntity user) {
-        return UserResponseApp.builder()
-                .userId(user.getId())
-                .fullName(user.getFullName())
-                .email(user.getEmail())
-                .roles(user.getRoles().stream().map(RolesEntity::getName).toList())
-                .status(user.getStatus())
-                .build();
     }
 }

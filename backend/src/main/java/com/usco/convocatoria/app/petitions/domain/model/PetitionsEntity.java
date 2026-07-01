@@ -1,6 +1,8 @@
-package com.usco.convocatoria.app.user.domain.model;
+package com.usco.convocatoria.app.petitions.domain.model;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.annotations.JdbcTypeCode;
@@ -8,7 +10,9 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.hibernate.type.SqlTypes;
 
-import com.usco.convocatoria.app.user.domain.model.enums.StateUser;
+import com.usco.convocatoria.app.convocations.domain.model.ConvocationsEntity;
+import com.usco.convocatoria.app.petitions.domain.model.enums.PetitionState;
+import com.usco.convocatoria.app.user.domain.model.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,54 +22,41 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "users")
-@SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
+@Table(name = "petitions")
+@SQLDelete(sql = "UPDATE petitions SET deleted_at = NOW() WHERE id = ?")
 @Where(clause = "deleted_at IS NULL")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class UserEntity {
+public class PetitionsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String fullName;
+    @ManyToOne
+    @JoinColumn(name = "convocation_id", nullable = false)
+    private ConvocationsEntity convocation;
 
-    @Column(name = "email", nullable = false)
-    @Email(message = "El email no es válido")
-    private String email;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
 
-    @Column(name = "password", nullable = false)
-    @NotEmpty(message = "La contraseña no puede estar vacía")
-    private String password;
-
-    @Column(name = "state", nullable = false, columnDefinition = "state_user")
+    @Column(name = "state", nullable = false, columnDefinition = "petition_state")
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    private StateUser state;
-
-    @ManyToMany
-    @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<RolesEntity> roles;
+    private PetitionState state;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -80,11 +71,12 @@ public class UserEntity {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.state = StateUser.ACTIVE;
+        this.state = PetitionState.PENDIENTE;
     }
 
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
+
 }
