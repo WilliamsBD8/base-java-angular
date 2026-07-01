@@ -9,7 +9,7 @@ Aplicación web para la gestión de convocatorias universitarias. Permite crear 
 | Frontend    | Angular 20, TypeScript, SweetAlert2             |
 | Backend     | Spring Boot 3.5, Java 17, Spring Security, JWT  |
 | Base de datos | PostgreSQL 17, Flyway                         |
-| Infraestructura | Docker Compose, Adminer                     |
+| Infraestructura | Docker Compose, Adminer, Railway (producción) |
 
 ## Arquitectura general
 
@@ -124,7 +124,11 @@ usco/
 ├── database/init/           # Scripts SQL de inicialización (Docker)
 ├── docs/                    # Documentación técnica
 ├── docker-compose.yml
-└── .env.example
+├── .env.example
+├── backend/Dockerfile       # Producción (Railway)
+├── backend/Dockerfile.dev   # Desarrollo local
+├── frontend/Dockerfile      # Producción (Railway)
+└── frontend/Dockerfile.dev  # Desarrollo local
 ```
 
 ## Roles y permisos
@@ -172,6 +176,86 @@ cd backend && ./mvnw compile -DskipTests
 # Compilar frontend
 cd frontend && npm run build
 ```
+
+## Despliegue en Railway
+
+El proyecto incluye Dockerfiles de producción en `backend/` y `frontend/`. El desarrollo local sigue usando `Dockerfile.dev` vía `docker compose`.
+
+### Arquitectura en Railway
+
+Necesitas **3 servicios** en un mismo proyecto de Railway:
+
+| Servicio   | Root Directory | Descripción                    |
+|------------|----------------|--------------------------------|
+| PostgreSQL | (plugin)       | Base de datos                  |
+| Backend    | `backend`      | API Spring Boot (JAR)          |
+| Frontend   | `frontend`     | Angular compilado + Nginx      |
+
+No despliegues Adminer en producción.
+
+### 1. PostgreSQL
+
+Crea el servicio con **New → Database → PostgreSQL**.
+
+### 2. Backend
+
+1. Conecta el repositorio y establece **Root Directory** en `backend`.
+2. Genera un dominio público (ej. `https://backend-xxx.up.railway.app`).
+3. Configura las variables de entorno:
+
+| Variable | Valor |
+|----------|-------|
+| `DB_HOST` | `${{Postgres.PGHOST}}` |
+| `DB_PORT` | `${{Postgres.PGPORT}}` |
+| `DB_NAME` | `${{Postgres.PGDATABASE}}` |
+| `DB_USER` | `${{Postgres.PGUSER}}` |
+| `DB_PASSWORD` | `${{Postgres.PGPASSWORD}}` |
+| `JWT_SECRET` | Secreto seguro (mínimo 32 caracteres) |
+| `JWT_EXPIRATION` | `86400000` |
+| `SPRING_PROFILES_ACTIVE` | `prod` |
+
+> `${{Postgres.*}}` referencia el plugin PostgreSQL. Ajusta el nombre si tu servicio tiene otro.
+
+### 3. Frontend
+
+1. Añade otro servicio del mismo repositorio con **Root Directory** en `frontend`.
+2. Configura la variable de build (debe coincidir con la URL pública del backend):
+
+| Variable | Valor |
+|----------|-------|
+| `API_URL` | `https://backend-xxx.up.railway.app/api/v1` |
+
+3. Genera un dominio público (ej. `https://frontend-xxx.up.railway.app`).
+
+### 4. CORS en el backend
+
+Vuelve al servicio backend y añade:
+
+| Variable | Valor |
+|----------|-------|
+| `CORS_ALLOWED_ORIGINS` | `https://frontend-xxx.up.railway.app` |
+
+Redespliega el backend después de este paso.
+
+### Orden recomendado
+
+```
+PostgreSQL → Backend → Frontend → actualizar CORS en Backend → redeploy Backend
+```
+
+### Verificación
+
+| Prueba | URL esperada |
+|--------|--------------|
+| API accesible | `https://tu-backend.up.railway.app/api/v1/auth/login` |
+| App cargando | `https://tu-frontend.up.railway.app` |
+
+### Notas
+
+- `API_URL` se aplica en **tiempo de build**: si cambia la URL del backend, hay que redesplegar el frontend.
+- `JWT_SECRET` y `DB_PASSWORD` deben ser secretos seguros en producción.
+- Cambia las credenciales del usuario admin seed tras el primer despliegue.
+- Más detalle en [`.env.example`](.env.example) y [documentación técnica](docs/DOCUMENTACION_TECNICA.md).
 
 ## Licencia
 
