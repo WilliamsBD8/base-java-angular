@@ -55,7 +55,7 @@ public class CategoryService {
         return ApiPage.of(categories.map(this::fromEntity));
     }
 
-    private CategoryResponse fromEntity(CategoriesEntity entity) {
+    public CategoryResponse fromEntity(CategoriesEntity entity) {
         return CategoryResponse.builder()
             .id(entity.getId())
             .name(entity.getName())

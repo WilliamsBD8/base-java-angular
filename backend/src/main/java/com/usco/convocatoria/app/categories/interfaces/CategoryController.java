@@ -1,5 +1,6 @@
 package com.usco.convocatoria.app.categories.interfaces;
 
+import com.usco.convocatoria.app.convocations.domain.services.ConvocationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,7 +38,7 @@ public class CategoryController {
             ApiResponse.success(
                 HttpStatus.CREATED.value() + "",
                 "Categoría creada exitosamente",
-                categoryService.createCategory(request)
+                categoryService.fromEntity(categoryService.createCategory(request))
             )
         );
     }
@@ -73,7 +74,7 @@ public class CategoryController {
             ApiResponse.success(
                 HttpStatus.OK.value() + "",
                 "Categoría actualizada exitosamente",
-                categoryService.updateCategory(id, request)
+                categoryService.fromEntity(categoryService.updateCategory(id, request))
             )
         );
     }
