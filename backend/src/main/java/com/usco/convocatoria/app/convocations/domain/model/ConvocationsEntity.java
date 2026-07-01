@@ -11,8 +11,10 @@ import org.hibernate.type.SqlTypes;
 
 import com.usco.convocatoria.app.categories.domain.model.CategoriesEntity;
 import com.usco.convocatoria.app.convocations.domain.model.enums.ConvocationsStates;
+import com.usco.convocatoria.app.petitions.domain.model.PetitionsEntity;
 import com.usco.convocatoria.app.user.domain.model.UserEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,25 +26,32 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "convocations")
 @SQLDelete(sql = "UPDATE convocations SET deleted_at = NOW() WHERE id = ?")
 @Where(clause = "deleted_at IS NULL")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"categories", "createdBy"})
 public class ConvocationsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -76,6 +85,9 @@ public class ConvocationsEntity {
         inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<CategoriesEntity> categories = new HashSet<>();
+
+    @OneToMany(mappedBy = "convocation", cascade = CascadeType.ALL)
+    private Set<PetitionsEntity> petitions = new HashSet<>();
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

@@ -1,0 +1,16 @@
+@if (totalPages > 1) {
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <small class="text-muted">Total: {{ totalElements }} registros</small>
+    <div class="btn-group">
+      <button type="button" class="btn btn-outline-primary btn-sm" [disabled]="!canGoPrev" (click)="prev()">
+        <i class="ri-arrow-left-s-line"></i> Anterior
+      </button>
+      <button type="button" class="btn btn-outline-primary btn-sm" disabled>
+        Página {{ page + 1 }} de {{ totalPages }}
+      </button>
+      <button type="button" class="btn btn-outline-primary btn-sm" [disabled]="!canGoNext" (click)="next()">
+        Siguiente <i class="ri-arrow-right-s-line"></i>
+      </button>
+    </div>
+  </div>
+}

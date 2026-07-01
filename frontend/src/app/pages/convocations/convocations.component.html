@@ -1,0 +1,85 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Convocatorias</h4>
+  @if (canManage) {
+    <a routerLink="/convocations/new" class="btn btn-primary">
+      <i class="ri-add-line me-1"></i> Nueva convocatoria
+    </a>
+  }
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    @if (loading()) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary"></div>
+      </div>
+    } @else {
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Fechas</th>
+            <th>Cupos</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (convocation of convocations(); track convocation.id) {
+            <tr>
+              <td>
+                <div class="fw-semibold">{{ convocation.name }}</div>
+                <small class="text-muted">{{ convocation.description }}</small>
+              </td>
+              <td>
+                <small>
+                  {{ formatDateTime(convocation.initialDate) }}<br />
+                  {{ formatDateTime(convocation.finalDate) }}
+                </small>
+              </td>
+              <td>{{ convocation.quota }}</td>
+              <td><app-status-badge [value]="convocation.state" /></td>
+              <td class="text-end">
+                @if (canManage) {
+                  <a [routerLink]="['/convocations', convocation.id, 'edit']" class="btn btn-sm btn-outline-primary me-1">
+                    <i class="ri-edit-line"></i>
+                  </a>
+                  @if (convocation.state === 'BORRADOR') {
+                    <button type="button" class="btn btn-sm btn-outline-success me-1" (click)="publish(convocation.id)">
+                      Publicar
+                    </button>
+                  }
+                  @if (convocation.state === 'PUBLICADA') {
+                    <button type="button" class="btn btn-sm btn-outline-warning me-1" (click)="close(convocation.id)">
+                      Cerrar
+                    </button>
+                  }
+                  <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(convocation.id)">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                }
+                @if (isStudent && convocation.state === 'PUBLICADA') {
+                  <button type="button" class="btn btn-sm btn-primary" (click)="applyToConvocation(convocation.id)">
+                    Postularme
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4">No hay convocatorias</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+  <div class="card-body">
+    <app-pagination
+      [page]="page()"
+      [totalPages]="totalPages()"
+      [totalElements]="totalElements()"
+      (pageChange)="loadConvocations($event)"
+    />
+  </div>
+</div>

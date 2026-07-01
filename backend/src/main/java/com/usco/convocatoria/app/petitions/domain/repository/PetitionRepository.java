@@ -34,4 +34,6 @@ public interface PetitionRepository extends JpaRepository<PetitionsEntity, Long>
 
     @EntityGraph(attributePaths = {"user", "user.roles"})
     java.util.List<PetitionsEntity> findByConvocation_Id(Long convocationId);
+
+    long countByState(PetitionState state);
 }

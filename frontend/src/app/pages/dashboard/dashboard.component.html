@@ -1,0 +1,104 @@
+<h4 class="mb-4">Dashboard</h4>
+
+@if (loading()) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary"></div>
+  </div>
+} @else {
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-1">Hola, {{ user()?.name }}</h5>
+          <p class="mb-0 text-muted">Bienvenido al panel de convocatorias</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (isAdminOrTeacher) {
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Convocatorias por categoría</h5>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Categoría</th>
+              <th>Total</th>
+              <th>Borrador</th>
+              <th>Publicadas</th>
+              <th>Cerradas</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of reports(); track item.category) {
+              <tr>
+                <td>{{ item.category }}</td>
+                <td><span class="badge bg-label-primary">{{ item.count }}</span></td>
+                <td>{{ item.countDraft }}</td>
+                <td>{{ item.countPublished }}</td>
+                <td>{{ item.countClosed }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4">No hay datos de reportes</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  @if (isStudent) {
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="mb-0">Convocatorias publicadas</h5>
+          </div>
+          <div class="card-body">
+            @for (convocation of convocations(); track convocation.id) {
+              <div class="border rounded p-3 mb-3">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="mb-1">{{ convocation.name }}</h6>
+                    <p class="text-muted mb-0 small">{{ convocation.description }}</p>
+                  </div>
+                  <app-status-badge [value]="convocation.state" />
+                </div>
+              </div>
+            } @empty {
+              <p class="text-muted mb-0">No hay convocatorias publicadas</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="card h-100">
+          <div class="card-header">
+            <h5 class="mb-0">Mis peticiones recientes</h5>
+          </div>
+          <div class="card-body">
+            @for (petition of petitions(); track petition.id) {
+              <div class="border rounded p-3 mb-3">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="mb-1">{{ petition.convocation.name }}</h6>
+                    <small class="text-muted">ID: {{ petition.id }}</small>
+                  </div>
+                  <app-status-badge [value]="petition.state" />
+                </div>
+              </div>
+            } @empty {
+              <p class="text-muted mb-0">No tienes peticiones registradas</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+}

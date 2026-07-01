@@ -1,0 +1,93 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Peticiones</h4>
+</div>
+
+@if (isStudent) {
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">Nueva petición</h5>
+    </div>
+    <div class="card-body">
+      <form [formGroup]="createForm" (ngSubmit)="submitCreate()" class="row g-3 align-items-end">
+        <div class="col-md-8">
+          <label class="form-label">Convocatoria</label>
+          <select class="form-select" formControlName="convocationId">
+            @for (convocation of publishedConvocations(); track convocation.id) {
+              <option [value]="convocation.id">{{ convocation.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-4">
+          <button type="submit" class="btn btn-primary w-100" [disabled]="saving() || publishedConvocations().length === 0">
+            Enviar petición
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<div class="card">
+  <div class="table-responsive">
+    @if (loading()) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary"></div>
+      </div>
+    } @else {
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Convocatoria</th>
+            @if (isAdmin) {
+              <th>Estudiante</th>
+            }
+            <th>Estado</th>
+            <th>Fecha</th>
+            @if (isAdmin) {
+              <th class="text-end">Acciones</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (petition of petitions(); track petition.id) {
+            <tr>
+              <td>{{ petition.id }}</td>
+              <td>{{ petition.convocation.name }}</td>
+              @if (isAdmin) {
+                <td>{{ petition.user.fullName }}</td>
+              }
+              <td><app-status-badge [value]="petition.state" /></td>
+              <td>{{ formatDateTime(petition.createdAt) }}</td>
+              @if (isAdmin) {
+                <td class="text-end">
+                  <select
+                    class="form-select form-select-sm d-inline-block w-auto"
+                    [value]="petition.state"
+                    (change)="updateState(petition.id, $any($event.target).value)"
+                  >
+                    @for (state of states; track state) {
+                      <option [value]="state">{{ state }}</option>
+                    }
+                  </select>
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="isAdmin ? 6 : 4" class="text-center text-muted py-4">No hay peticiones</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+  <div class="card-body">
+    <app-pagination
+      [page]="page()"
+      [totalPages]="totalPages()"
+      [totalElements]="totalElements()"
+      (pageChange)="loadPetitions($event)"
+    />
+  </div>
+</div>

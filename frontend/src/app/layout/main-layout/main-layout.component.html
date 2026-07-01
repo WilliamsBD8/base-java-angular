@@ -1,0 +1,53 @@
+<div class="layout-wrapper layout-content-navbar">
+  <div class="layout-container">
+    <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+      <div class="app-brand demo">
+        <a routerLink="/dashboard" class="app-brand-link">
+          <span class="app-brand-logo demo">
+            <i class="ri-graduation-cap-line ri-24px text-primary"></i>
+          </span>
+          <span class="app-brand-text demo menu-text fw-semibold ms-2">Convocatorias</span>
+        </a>
+      </div>
+
+      <div class="menu-inner-shadow"></div>
+
+      <ul class="menu-inner py-1">
+        @for (item of visibleMenu(); track item.route) {
+          <li class="menu-item" routerLinkActive="active">
+            <a [routerLink]="item.route" class="menu-link">
+              <i [class]="item.icon + ' menu-icon'"></i>
+              <div>{{ item.label }}</div>
+            </a>
+          </li>
+        }
+      </ul>
+    </aside>
+
+    <div class="layout-page">
+      <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme">
+        <div class="navbar-nav-right d-flex align-items-center w-100 justify-content-between">
+          <div>
+            <h5 class="mb-0">Sistema de Convocatorias USCO</h5>
+            <small class="text-muted">Gestión de convocatorias y peticiones</small>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="text-end">
+              <div class="fw-semibold">{{ user()?.name }}</div>
+              <small class="text-muted">{{ user()?.email }}</small>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm" (click)="logout()">
+              <i class="ri-logout-box-r-line me-1"></i> Salir
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <div class="content-wrapper">
+        <div class="container-xxl flex-grow-1 container-p-y">
+          <router-outlet />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
