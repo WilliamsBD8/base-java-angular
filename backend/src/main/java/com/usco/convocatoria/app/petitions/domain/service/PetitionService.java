@@ -124,7 +124,10 @@ public class PetitionService {
     public ApiPage<PetitionResponse> findAllPetitions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         UserEntity currentUser = userService.getCurrentUser();
-        if(currentUser.getRoles().stream().anyMatch(role -> role.getName().equals("ADMIN")) || currentUser.getRoles().stream().anyMatch(role -> role.getName().equals("TEACHER"))) {
+        if(currentUser.getRoles().stream().anyMatch(role -> role.getName().equals("ADMIN"))) {
+            Page<PetitionsEntity> petitions = petitionRepository.findAll(pageable);
+            return ApiPage.of(petitions.map(this::fromEntity));
+        } else if(currentUser.getRoles().stream().anyMatch(role -> role.getName().equals("TEACHER"))) {
             Page<PetitionsEntity> petitions = petitionRepository.findAllByConvocation_CreatedBy(currentUser, pageable);
             return ApiPage.of(petitions.map(this::fromEntity));
         } else {
