@@ -1,0 +1,71 @@
+erDiagram
+    USERS {
+        bigint id PK
+        varchar name
+        varchar email UK
+        varchar password
+        state_user state
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    ROLES {
+        bigint id PK
+        varchar name UK
+        varchar description
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    USER_ROLES {
+        bigint user_id PK_FK
+        bigint role_id PK_FK
+    }
+
+    CATEGORIES {
+        bigint id PK
+        varchar name UK
+        text description
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    CONVOCATIONS {
+        bigint id PK
+        bigint user_id FK
+        varchar name
+        text description
+        timestamp initial_date
+        timestamp final_date
+        int quota
+        convocations_states state
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    CONVOCATION_CATEGORIES {
+        bigint convocation_id PK_FK
+        bigint category_id PK_FK
+    }
+
+    PETITIONS {
+        bigint id PK
+        bigint convocation_id FK
+        bigint user_id FK
+        petition_state state
+        timestamp created_at
+        timestamp updated_at
+        timestamp deleted_at
+    }
+
+    USERS ||--o{ USER_ROLES : "tiene"
+    ROLES ||--o{ USER_ROLES : "asignado_a"
+    USERS ||--o{ CONVOCATIONS : "crea"
+    USERS ||--o{ PETITIONS : "presenta"
+    CONVOCATIONS ||--o{ PETITIONS : "recibe"
+    CONVOCATIONS ||--o{ CONVOCATION_CATEGORIES : "clasifica"
+    CATEGORIES ||--o{ CONVOCATION_CATEGORIES : "pertenece_a"

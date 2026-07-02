@@ -55,13 +55,13 @@ docker compose up --build
 
 ### Credenciales por defecto (seed)
 
-Tras la primera migración Flyway se crea un usuario administrador:
+Tras la primera migración Flyway se crean tres usuarios de prueba:
 
-| Campo    | Valor              | Valor              | Valor              |
-|----------|--------------------|--------------------|--------------------|
-| Email    | `admin@example.com` | `teacher@example.com` | `student@example.com` |
-| Password | `123456789`         | `123456789`         | `123456789`         |
-| Rol      | `ADMIN`             | `TEACHER`           | `STUDENT`           |
+| Rol       | Email                   | Password    |
+|-----------|-------------------------|-------------|
+| `ADMIN`   | `admin@example.com`     | `123456789` |
+| `TEACHER` | `teacher@example.com`   | `123456789` |
+| `STUDENT` | `student@example.com`   | `123456789` |
 
 > Cambia estas credenciales en entornos reales.
 
@@ -108,6 +108,7 @@ usco/
 │   └── src/main/java/com/usco/convocatoria/
 │       ├── app/             # Módulos de negocio
 │       │   ├── auth/
+│       │   ├── user/
 │       │   ├── categories/
 │       │   ├── convocations/
 │       │   ├── petitions/
@@ -118,11 +119,16 @@ usco/
 ├── frontend/                # SPA Angular
 │   └── src/app/
 │       ├── core/            # Servicios, guards, modelos
-│       ├── pages/           # Pantallas
+│       ├── pages/           # Pantallas (auth, dashboard, categories, convocations, petitions, reports)
 │       ├── layout/          # Layout principal
+│       ├── interceptors/    # Interceptor JWT
 │       └── shared/          # Componentes reutilizables
 ├── database/init/           # Scripts SQL de inicialización (Docker)
-├── docs/                    # Documentación técnica
+├── docs/                    # Documentación técnica y entregables
+│   ├── DOCUMENTACION_TECNICA.md
+│   ├── Justificacion_Tecnica.docx
+│   ├── Diagrama_ER_y_Modelo_Relacional.docx
+│   └── diagrama_er.png
 ├── docker-compose.yml
 ├── .env.example
 ├── backend/Dockerfile       # Producción (Railway)
@@ -133,27 +139,80 @@ usco/
 
 ## Roles y permisos
 
-| Rol      | Descripción                                      |
-|----------|--------------------------------------------------|
-| `ADMIN`  | Gestión completa de categorías y convocatorias  |
-| `TEACHER`| Crear/editar convocatorias, ver reportes         |
-| `STUDENT`| Inscribirse en convocatorias publicadas          |
+| Rol       | Permisos principales |
+|-----------|----------------------|
+| `ADMIN`   | CRUD de categorías; gestión de convocatorias y peticiones; reportes |
+| `TEACHER` | Crear, editar, publicar y cerrar convocatorias; consultar categorías y reportes; revisar peticiones |
+| `STUDENT` | Inscribirse en convocatorias publicadas; consultar el estado de sus peticiones |
 
 ## Módulos principales
 
-- **Autenticación**: registro, login, perfil (`/me`), logout con blacklist de JWT.
-- **Categorías**: CRUD (solo ADMIN).
-- **Convocatorias**: ciclo de vida `BORRADOR → PUBLICADA → CERRADA`.
-- **Peticiones**: inscripción de estudiantes; estados `PENDIENTE`, `APROBADA`, `RECHAZADA`.
-- **Reportes**: estadísticas por categoría, convocatoria y estado de peticiones.
+| Módulo          | Descripción |
+|-----------------|-------------|
+| **Autenticación** | Registro, login, perfil (`/me`), logout con blacklist de JWT |
+| **Categorías**    | CRUD (solo ADMIN); consulta (ADMIN y TEACHER) |
+| **Convocatorias** | Ciclo de vida `BORRADOR → PUBLICADA → CERRADA`; cupos y fechas de inscripción |
+| **Peticiones**    | Inscripción de estudiantes; estados `PENDIENTE`, `APROBADA`, `RECHAZADA` |
+| **Reportes**      | Estadísticas por categoría, convocatoria y estado de peticiones |
+
+### Rutas del frontend
+
+| Ruta                    | Roles permitidos        |
+|-------------------------|-------------------------|
+| `/dashboard`            | Todos (autenticados)    |
+| `/categories`           | ADMIN, TEACHER          |
+| `/convocations`         | Todos (autenticados)    |
+| `/convocations/new`       | ADMIN, TEACHER          |
+| `/convocations/:id/edit`  | ADMIN, TEACHER          |
+| `/petitions`              | ADMIN, TEACHER, STUDENT |
+| `/reports`                | ADMIN, TEACHER          |
+
+### API REST (`/api/v1`)
+
+| Recurso         | Endpoints principales |
+|-----------------|-----------------------|
+| `/auth`         | `POST /register`, `POST /login`, `GET /me`, `POST /logout` |
+| `/categories`   | `POST /create`, `GET /all`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}` |
+| `/convocations` | `POST /create`, `GET /all`, `GET /{id}`, `PUT /{id}`, `DELETE /{id}`, `PUT /{id}/publish`, `PUT /{id}/close` |
+| `/petitions`    | `POST /create`, `GET /all`, `GET /{id}`, `PUT /{id}` |
+| `/reports`      | `GET /convocations-categories`, `GET /petitions-convocations`, `GET /petitions-states` |
+
+Todas las respuestas usan el envelope `ApiResponse<T>` con paginación vía `ApiPage<T>` (`?page=0&size=10`).
+
+## Modelo de datos
+
+El sistema persiste **7 tablas** en PostgreSQL: `users`, `roles`, `user_roles`, `categories`, `convocations`, `convocation_categories` y `petitions`.
+
+```mermaid
+erDiagram
+    USERS ||--o{ USER_ROLES : tiene
+    ROLES ||--o{ USER_ROLES : asignado
+    USERS ||--o{ CONVOCATIONS : crea
+    USERS ||--o{ PETITIONS : presenta
+    CONVOCATIONS ||--o{ PETITIONS : recibe
+    CONVOCATIONS }o--o{ CATEGORIES : clasifica
+```
+
+**Tipos ENUM:** `state_user` (ACTIVE, INACTIVE, BLOCKED), `convocations_states` (BORRADOR, PUBLICADA, CERRADA), `petition_state` (PENDIENTE, APROBADA, RECHAZADA).
+
+**Reglas clave:** soft delete en todas las entidades (`deleted_at`), una petición activa por usuario y convocatoria, índices únicos parciales sobre registros no eliminados.
 
 ## Documentación técnica
 
-Consulta la documentación detallada en:
+| Documento | Descripción |
+|-----------|-------------|
+| [Documentación técnica completa](docs/DOCUMENTACION_TECNICA.md) | Arquitectura, endpoints, seguridad, reglas de negocio y despliegue |
+| [Justificación técnica](docs/Justificacion_Tecnica.docx) | Escalabilidad y decisiones de diseño |
+| [Diagrama ER y modelo relacional](docs/Diagrama_ER_y_Modelo_Relacional.docx) | Diagrama entidad-relación y tablas con tipos, claves e índices |
+| [Diagrama ER (imagen)](docs/diagrama_er.png) | Representación visual del modelo de datos |
 
-- [Documentación técnica completa](docs/DOCUMENTACION_TECNICA.md)
+Para regenerar los documentos Word:
 
-Incluye: modelo de datos, endpoints REST, autenticación JWT, reglas de negocio, convenciones de código y guía de despliegue.
+```bash
+python docs/generar_justificacion.py
+python docs/generar_diagrama_er.py
+python docs/generar_modelo_datos.py
+```
 
 ## Comandos útiles
 
