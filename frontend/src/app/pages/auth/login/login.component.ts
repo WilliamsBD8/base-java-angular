@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { getErrorMessage } from '../../../core/utils/alert';
+import { getErrorMessage, showError, showSuccessToast, showWarning } from '../../../core/utils/alert';
 
 @Component({
   selector: 'app-login',
@@ -33,10 +33,12 @@ export class LoginComponent {
       next: () => {
         this.loading.set(false);
         this.router.navigate(['/dashboard']);
+        showSuccessToast('Inicio de sesión exitoso');
       },
       error: (error) => {
         this.loading.set(false);
-        alert(getErrorMessage(error));
+
+        showWarning(getErrorMessage(error));
       }
     });
   }

@@ -20,6 +20,7 @@
             <th>Nombre</th>
             <th>Fechas</th>
             <th>Cupos</th>
+            <th>Categorias</th>
             <th>Estado</th>
             <th class="text-end">Acciones</th>
           </tr>
@@ -33,11 +34,18 @@
               </td>
               <td>
                 <small>
-                  {{ formatDateTime(convocation.initialDate) }}<br />
-                  {{ formatDateTime(convocation.finalDate) }}
+                  <b>Fecha inicial:</b> {{ formatDateTime(convocation.initialDate) }}<br />
+                  <b>Fecha final:</b> {{ formatDateTime(convocation.finalDate) }}
                 </small>
               </td>
               <td>{{ convocation.quota }}</td>
+              <td>
+                <small>
+                  @for (category of convocation.categories; track category.id) {
+                    ° {{ category.name }}<br />
+                  }
+                </small>
+              </td>
               <td><app-status-badge [value]="convocation.state" /></td>
               <td class="text-end">
                 @if (canManage) {

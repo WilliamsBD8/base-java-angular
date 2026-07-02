@@ -1,0 +1,183 @@
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+  <h4 class="mb-0">Reportes</h4>
+
+  <div class="btn-group" role="group" aria-label="Modo de visualización">
+    <button
+      type="button"
+      class="btn"
+      [class.btn-primary]="viewMode() === 'table'"
+      [class.btn-outline-primary]="viewMode() !== 'table'"
+      (click)="setViewMode('table')"
+    >
+      <i class="ri-table-line me-1"></i>
+      Tabla
+    </button>
+    <button
+      type="button"
+      class="btn"
+      [class.btn-primary]="viewMode() === 'chart'"
+      [class.btn-outline-primary]="viewMode() !== 'chart'"
+      (click)="setViewMode('chart')"
+    >
+      <i class="ri-bar-chart-line me-1"></i>
+      Gráfico
+    </button>
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary"></div>
+  </div>
+} @else {
+  <ul class="nav nav-pills mb-4 flex-wrap gap-2">
+    @for (tab of tabs; track tab.id) {
+      <li class="nav-item">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeTab() === tab.id"
+          (click)="setTab(tab.id)"
+        >
+          <i [class]="tab.icon + ' me-1'"></i>
+          {{ tab.label }}
+        </button>
+      </li>
+    }
+  </ul>
+
+  @if (activeTab() === 'categories') {
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Convocatorias por categoría</h5>
+      </div>
+
+      @if (viewMode() === 'table') {
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Categoría</th>
+                <th>Total</th>
+                <th>Borrador</th>
+                <th>Publicadas</th>
+                <th>Cerradas</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of categoryReports(); track item.category) {
+                <tr>
+                  <td>{{ item.category }}</td>
+                  <td><span class="badge bg-label-primary">{{ item.count }}</span></td>
+                  <td>{{ item.countDraft }}</td>
+                  <td>{{ item.countPublished }}</td>
+                  <td>{{ item.countClosed }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">No hay datos de reportes</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="card-body">
+          @if (categoryReports().length) {
+            <app-report-chart [config]="categoryChartConfig()" />
+          } @else {
+            <p class="text-muted text-center mb-0 py-4">No hay datos para mostrar en el gráfico</p>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (activeTab() === 'petitions-convocations') {
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Peticiones por convocatoria</h5>
+      </div>
+
+      @if (viewMode() === 'table') {
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Convocatoria</th>
+                <th>Total</th>
+                <th>Pendientes</th>
+                <th>Aprobadas</th>
+                <th>Rechazadas</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of petitionConvocationReports(); track item.convocationName) {
+                <tr>
+                  <td>{{ item.convocationName }}</td>
+                  <td><span class="badge bg-label-primary">{{ item.countPetitions }}</span></td>
+                  <td>{{ item.countPetitionsPending }}</td>
+                  <td>{{ item.countPetitionsAccepted }}</td>
+                  <td>{{ item.countPetitionsRejected }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">No hay datos de reportes</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="card-body">
+          @if (petitionConvocationReports().length) {
+            <app-report-chart [config]="petitionConvocationChartConfig()" />
+          } @else {
+            <p class="text-muted text-center mb-0 py-4">No hay datos para mostrar en el gráfico</p>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (activeTab() === 'petitions-states') {
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Estados de peticiones</h5>
+      </div>
+
+      @if (viewMode() === 'table') {
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Estado</th>
+                <th>Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of petitionStateReports(); track item.state) {
+                <tr>
+                  <td><app-status-badge [value]="item.state" /></td>
+                  <td><span class="badge bg-label-primary">{{ item.countPetitions }}</span></td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="2" class="text-center text-muted py-4">No hay datos de reportes</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="card-body">
+          @if (petitionStateReports().length) {
+            <app-report-chart [config]="petitionStateChartConfig()" />
+          } @else {
+            <p class="text-muted text-center mb-0 py-4">No hay datos para mostrar en el gráfico</p>
+          }
+        </div>
+      }
+    </div>
+  }
+}

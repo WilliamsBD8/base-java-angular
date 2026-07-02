@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import com.usco.convocatoria.app.categories.domain.model.CategoriesEntity;
 import com.usco.convocatoria.app.convocations.domain.model.ConvocationsEntity;
 import com.usco.convocatoria.app.convocations.domain.model.enums.ConvocationsStates;
+import com.usco.convocatoria.app.user.domain.model.UserEntity;
 
 public interface ConvocationRepository extends JpaRepository<ConvocationsEntity, Long> {
 
@@ -41,4 +42,7 @@ public interface ConvocationRepository extends JpaRepository<ConvocationsEntity,
             @Param("categoryId") Long categoryId,
             @Param("state") ConvocationsStates state
     );
+
+    @EntityGraph(attributePaths = {"categories", "createdBy", "createdBy.roles"})
+    Page<ConvocationsEntity> findAllByCreatedBy(UserEntity createdBy, Pageable pageable);
 }

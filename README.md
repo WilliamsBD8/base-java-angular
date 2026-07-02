@@ -57,11 +57,11 @@ docker compose up --build
 
 Tras la primera migración Flyway se crea un usuario administrador:
 
-| Campo    | Valor              |
-|----------|--------------------|
-| Email    | `admin@example.com` |
-| Password | `123456789`         |
-| Rol      | `ADMIN`             |
+| Campo    | Valor              |Campo    | Valor              |Campo    | Valor              |
+|----------|--------------------|----------|--------------------|----------|--------------------|
+| Email    | `admin@example.com` | Email    | `teacher@example.com` | Email    | `student@example.com` |
+| Password | `123456789`         | Password | `123456789`         | Password | `123456789`         |
+| Rol      | `ADMIN`             | Rol      | `TEACHER`           | Rol      | `STUDENT`           |
 
 > Cambia estas credenciales en entornos reales.
 
@@ -224,6 +224,7 @@ Crea el servicio con **New → Database → PostgreSQL**.
 | Variable | Valor |
 |----------|-------|
 | `API_URL` | `https://backend-xxx.up.railway.app/api/v1` |
+| `PORT` | `80` |
 
 3. Genera un dominio público (ej. `https://frontend-xxx.up.railway.app`).
 

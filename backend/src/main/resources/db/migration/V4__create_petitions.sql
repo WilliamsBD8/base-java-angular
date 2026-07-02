@@ -17,3 +17,9 @@ CREATE TABLE petitions (
 CREATE UNIQUE INDEX uq_petitions_user_convocation
 ON petitions (user_id, convocation_id)
 WHERE deleted_at IS NULL;
+
+INSERT INTO petitions (convocation_id, user_id, state, created_at, updated_at)  
+VALUES
+    (1, 1, 'PENDIENTE', NOW(), NOW()),
+    (2, 1, 'PENDIENTE', NOW(), NOW()),
+    (3, 1, 'PENDIENTE', NOW(), NOW());  

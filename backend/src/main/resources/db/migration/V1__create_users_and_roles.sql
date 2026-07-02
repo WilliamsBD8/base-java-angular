@@ -35,7 +35,9 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email ON users (email) WHERE deleted
 
 INSERT INTO users (name, email, password, state, created_at, updated_at)
 VALUES
-    ('Admin', 'admin@example.com', '$2b$10$oKUf4ASL60setVBL2VQf2.WQGFKxh/zmliayZzujfT5lUoeIUsuTi', 'ACTIVE', NOW(), NOW());
+    ('Admin', 'admin@example.com', '$2b$10$oKUf4ASL60setVBL2VQf2.WQGFKxh/zmliayZzujfT5lUoeIUsuTi', 'ACTIVE', NOW(), NOW()),
+    ('Teacher', 'teacher@example.com', '$2b$10$oKUf4ASL60setVBL2VQf2.WQGFKxh/zmliayZzujfT5lUoeIUsuTi', 'ACTIVE', NOW(), NOW()),
+    ('Student', 'student@example.com', '$2b$10$oKUf4ASL60setVBL2VQf2.WQGFKxh/zmliayZzujfT5lUoeIUsuTi', 'ACTIVE', NOW(), NOW());
 
 CREATE TABLE user_roles (
     user_id BIGINT NOT NULL,
@@ -47,4 +49,6 @@ CREATE TABLE user_roles (
 
 INSERT INTO user_roles (user_id, role_id)
 VALUES
-    (1, 1);
+    (1, 1),
+    (2, 2),
+    (3, 3);

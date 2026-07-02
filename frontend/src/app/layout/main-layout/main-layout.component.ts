@@ -27,7 +27,8 @@ export class MainLayoutComponent {
     { label: 'Dashboard', icon: 'ri-dashboard-line', route: '/dashboard', roles: ['ADMIN', 'TEACHER', 'STUDENT'] },
     { label: 'Categorías', icon: 'ri-price-tag-3-line', route: '/categories', roles: ['ADMIN', 'TEACHER'] },
     { label: 'Convocatorias', icon: 'ri-calendar-event-line', route: '/convocations', roles: ['ADMIN', 'TEACHER', 'STUDENT'] },
-    { label: 'Peticiones', icon: 'ri-file-list-3-line', route: '/petitions', roles: ['ADMIN', 'STUDENT'] }
+    { label: 'Peticiones', icon: 'ri-file-list-3-line', route: '/petitions', roles: ['ADMIN', 'STUDENT', 'TEACHER'] },
+    { label: 'Reportes', icon: 'ri-bar-chart-2-line', route: '/reports', roles: ['ADMIN', 'TEACHER'] }
   ];
 
   visibleMenu(): MenuItem[] {

@@ -24,6 +24,8 @@ public class CorsConfig {
                 .map(String::trim)
                 .filter(origin -> !origin.isEmpty())
                 .toList();
+        
+        System.out.println("Allowed origins: " + origins);
 
         configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(List.of(

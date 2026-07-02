@@ -1,9 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ConvocationService } from '../../core/services/convocation.service';
 import { PetitionService } from '../../core/services/petition.service';
-import { ReportService } from '../../core/services/report.service';
-import { ConvocationCategoryReport } from '../../core/models/report.model';
 import { Convocation } from '../../core/models/convocation.model';
 import { Petition } from '../../core/models/petition.model';
 import { hasAnyRole } from '../../core/utils/helpers';
@@ -12,18 +11,16 @@ import { StatusBadgeComponent } from '../../shared/components/status-badge/statu
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [StatusBadgeComponent],
+  imports: [StatusBadgeComponent, RouterLink],
   templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit {
   private readonly authService = inject(AuthService);
-  private readonly reportService = inject(ReportService);
   private readonly convocationService = inject(ConvocationService);
   private readonly petitionService = inject(PetitionService);
 
   readonly user = this.authService.currentUser;
   readonly loading = signal(true);
-  readonly reports = signal<ConvocationCategoryReport[]>([]);
   readonly convocations = signal<Convocation[]>([]);
   readonly petitions = signal<Petition[]>([]);
 
@@ -36,21 +33,12 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.isAdminOrTeacher) {
-      this.loadAdminDashboard();
+    if (this.isStudent) {
+      this.loadStudentDashboard();
       return;
     }
-    this.loadStudentDashboard();
-  }
 
-  private loadAdminDashboard(): void {
-    this.reportService.getConvocationsByCategory().subscribe({
-      next: (response) => {
-        this.reports.set(response.data);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false)
-    });
+    this.loading.set(false);
   }
 
   private loadStudentDashboard(): void {

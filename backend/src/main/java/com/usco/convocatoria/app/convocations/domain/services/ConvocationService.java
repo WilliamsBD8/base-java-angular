@@ -96,8 +96,13 @@ public class ConvocationService {
     @Transactional(readOnly = true)
     public ApiPage<ConvocationResponse> findAllConvocations(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<ConvocationsEntity> convocations = convocationRepository.findAll(pageable);
-        return ApiPage.of(convocations.map(this::fromEntity));
+        if(userService.getCurrentUser().getRoles().stream().anyMatch(role -> role.getName().equals("ADMIN")) || userService.getCurrentUser().getRoles().stream().anyMatch(role -> role.getName().equals("STUDENT"))) {
+            Page<ConvocationsEntity> convocations = convocationRepository.findAll(pageable);
+            return ApiPage.of(convocations.map(this::fromEntity));
+        } else {
+            Page<ConvocationsEntity> convocations = convocationRepository.findAllByCreatedBy(userService.getCurrentUser(), pageable);
+            return ApiPage.of(convocations.map(this::fromEntity));
+        }
     }
 
     public ConvocationsEntity updateConvocationState(Long id, ConvocationsStates state) {

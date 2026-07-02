@@ -48,6 +48,10 @@ export class PetitionsComponent implements OnInit {
     return hasRole(this.authService.getRoles(), 'STUDENT');
   }
 
+  get isTeacher(): boolean {
+    return hasRole(this.authService.getRoles(), 'TEACHER');
+  }
+
   ngOnInit(): void {
     this.loadPetitions();
     if (this.isStudent) {

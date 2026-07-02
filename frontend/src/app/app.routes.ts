@@ -52,8 +52,13 @@ export const routes: Routes = [
       },
       {
         path: 'petitions',
-        canActivate: [roleGuard('ADMIN', 'STUDENT')],
+        canActivate: [roleGuard('ADMIN', 'STUDENT','TEACHER')],
         loadComponent: () => import('./pages/petitions/petitions.component').then((m) => m.PetitionsComponent)
+      },
+      {
+        path: 'reports',
+        canActivate: [roleGuard('ADMIN', 'TEACHER')],
+        loadComponent: () => import('./pages/reports/reports.component').then((m) => m.ReportsComponent)
       }
     ]
   },

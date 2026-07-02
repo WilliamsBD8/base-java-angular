@@ -39,12 +39,12 @@
           <tr>
             <th>ID</th>
             <th>Convocatoria</th>
-            @if (isAdmin) {
+            @if (isAdmin || isTeacher) {
               <th>Estudiante</th>
             }
             <th>Estado</th>
             <th>Fecha</th>
-            @if (isAdmin) {
+            @if (isAdmin || isTeacher) {
               <th class="text-end">Acciones</th>
             }
           </tr>
@@ -54,12 +54,12 @@
             <tr>
               <td>{{ petition.id }}</td>
               <td>{{ petition.convocation.name }}</td>
-              @if (isAdmin) {
+              @if (isAdmin || isTeacher) {
                 <td>{{ petition.user.fullName }}</td>
               }
               <td><app-status-badge [value]="petition.state" /></td>
               <td>{{ formatDateTime(petition.createdAt) }}</td>
-              @if (isAdmin) {
+              @if (isAdmin || isTeacher) {
                 <td class="text-end">
                   <select
                     class="form-select form-select-sm d-inline-block w-auto"
@@ -75,7 +75,7 @@
             </tr>
           } @empty {
             <tr>
-              <td [attr.colspan]="isAdmin ? 6 : 4" class="text-center text-muted py-4">No hay peticiones</td>
+              <td [attr.colspan]="isAdmin || isTeacher ? 6 : 4" class="text-center text-muted py-4">No hay peticiones</td>
             </tr>
           }
         </tbody>

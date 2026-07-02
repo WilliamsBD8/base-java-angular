@@ -17,6 +17,12 @@ CREATE TABLE convocations (
     CONSTRAINT fk_convocations_user FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
+INSERT INTO convocations (user_id, name, description, initial_date, final_date, quota, state, created_at, updated_at)
+VALUES
+    (2, 'Convocatoria 1', 'Descripción 1', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'BORRADOR', NOW(), NOW()),
+    (2, 'Convocatoria 2', 'Descripción 2', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'BORRADOR', NOW(), NOW()),
+    (2, 'Convocatoria 3', 'Descripción 3', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'BORRADOR', NOW(), NOW());
+
 CREATE TABLE convocation_categories (
     convocation_id BIGINT NOT NULL,
     category_id BIGINT NOT NULL,
@@ -24,3 +30,12 @@ CREATE TABLE convocation_categories (
     CONSTRAINT fk_convocation_categories_convocation FOREIGN KEY (convocation_id) REFERENCES convocations (id),
     CONSTRAINT fk_convocation_categories_category FOREIGN KEY (category_id) REFERENCES categories (id)
 );
+
+INSERT INTO convocation_categories (convocation_id, category_id)
+VALUES
+    (1, 1),
+    (1, 2),
+    (1, 3),
+    (2, 2),
+    (2, 3),
+    (3, 3);

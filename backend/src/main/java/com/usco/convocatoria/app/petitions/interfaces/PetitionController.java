@@ -54,7 +54,7 @@ public class PetitionController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<ApiResponse<?>> getAllPetitions(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(
             ApiResponse.success(
@@ -66,7 +66,7 @@ public class PetitionController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'TEACHER')")
     public ResponseEntity<ApiResponse<?>> updatePetition(@PathVariable Long id, @Valid @RequestBody PetitionUpdate request) {
         return ResponseEntity.ok(
             ApiResponse.success(

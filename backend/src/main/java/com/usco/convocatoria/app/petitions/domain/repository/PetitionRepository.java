@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.usco.convocatoria.app.petitions.domain.model.PetitionsEntity;
 import com.usco.convocatoria.app.petitions.domain.model.enums.PetitionState;
+import com.usco.convocatoria.app.user.domain.model.UserEntity;
 
 public interface PetitionRepository extends JpaRepository<PetitionsEntity, Long> {
 
@@ -36,4 +37,7 @@ public interface PetitionRepository extends JpaRepository<PetitionsEntity, Long>
     java.util.List<PetitionsEntity> findByConvocation_Id(Long convocationId);
 
     long countByState(PetitionState state);
+
+    @EntityGraph(attributePaths = {"convocation", "convocation.categories", "convocation.createdBy", "convocation.createdBy.roles", "user", "user.roles"})
+    Page<PetitionsEntity> findAllByConvocation_CreatedBy(UserEntity createdBy, Pageable pageable);
 }
