@@ -19,9 +19,11 @@ CREATE TABLE convocations (
 
 INSERT INTO convocations (user_id, name, description, initial_date, final_date, quota, state, created_at, updated_at)
 VALUES
-    (2, 'Convocatoria 1', 'Descripción 1', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'BORRADOR', NOW(), NOW()),
-    (2, 'Convocatoria 2', 'Descripción 2', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'BORRADOR', NOW(), NOW()),
-    (2, 'Convocatoria 3', 'Descripción 3', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'BORRADOR', NOW(), NOW());
+    (2, 'Convocatoria 1', 'Descripción 1', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'PUBLICADA', NOW(), NOW()),
+    (2, 'Convocatoria 2', 'Descripción 2', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'PUBLICADA', NOW(), NOW()),
+    (2, 'Convocatoria 3', 'Descripción 3', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'PUBLICADA', NOW(), NOW()),
+    (2, 'Convocatoria 4', 'Descripción 4', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'BORRADOR', NOW(), NOW()),
+    (2, 'Convocatoria 5', 'Descripción 5', '2026-01-01 00:00:00', '2026-01-01 00:00:00', 10, 'CERRADA', NOW(), NOW());
 
 CREATE TABLE convocation_categories (
     convocation_id BIGINT NOT NULL,
