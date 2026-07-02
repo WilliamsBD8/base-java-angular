@@ -1,6 +1,7 @@
 # Sistema de Convocatorias — USCO
 
 Aplicación web para la gestión de convocatorias universitarias. Permite crear y publicar convocatorias, inscribir estudiantes, aprobar o rechazar solicitudes y consultar reportes estadísticos.
+[Ver en producción](https://dynamic-friendship-production-143c.up.railway.app/login)
 
 ## Stack tecnológico
 
