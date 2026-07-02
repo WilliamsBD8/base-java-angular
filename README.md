@@ -57,11 +57,11 @@ docker compose up --build
 
 Tras la primera migración Flyway se crea un usuario administrador:
 
-| Campo    | Valor              |Campo    | Valor              |Campo    | Valor              |
-|----------|--------------------|----------|--------------------|----------|--------------------|
-| Email    | `admin@example.com` | Email    | `teacher@example.com` | Email    | `student@example.com` |
-| Password | `123456789`         | Password | `123456789`         | Password | `123456789`         |
-| Rol      | `ADMIN`             | Rol      | `TEACHER`           | Rol      | `STUDENT`           |
+| Campo    | Valor              | Valor              | Valor              |
+|----------|--------------------|--------------------|--------------------|
+| Email    | `admin@example.com` | `teacher@example.com` | `student@example.com` |
+| Password | `123456789`         | `123456789`         | `123456789`         |
+| Rol      | `ADMIN`             | `TEACHER`           | `STUDENT`           |
 
 > Cambia estas credenciales en entornos reales.
 
